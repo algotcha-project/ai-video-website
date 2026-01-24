@@ -186,18 +186,15 @@ export default function Home() {
         </div>
         <div className="container">
           <div className="hero-content">
-            <div className="logo-container">
-              <div className="logo">
-                <Video size={48} />
-                <Sparkles size={32} className="logo-sparkle" />
-              </div>
-              <h2 className="site-name">MemoriaAI</h2>
+            <div className="hero-badge">
+              <Sparkles size={16} />
+              <span>AI-технології нового покоління</span>
             </div>
             <h1 className="hero-title">
-              Створюємо унікальні <span className="highlight">AI-відео</span> з ваших фотографій
+              Перетворюємо ваші <span className="highlight">спогади</span> у <span className="highlight">відео</span>
             </h1>
             <p className="hero-subtitle">
-              Професійні відео на замовлення для будь-якої події: весілля, дні народження, ювілеї та інші особливі моменти життя
+              Професійні AI-відео з ваших фотографій для будь-якої події. Весілля, дні народження, ювілеї та інші особливі моменти життя
             </p>
             <div className="hero-buttons">
               <a href="#order" className="btn btn-primary">
@@ -205,6 +202,20 @@ export default function Home() {
                 <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
               </a>
               <a href="#portfolio" className="btn btn-secondary">Переглянути роботи</a>
+            </div>
+            <div className="hero-stats-preview">
+              <div className="stat-preview">
+                <span className="stat-preview-number">500+</span>
+                <span className="stat-preview-label">відео</span>
+              </div>
+              <div className="stat-preview">
+                <span className="stat-preview-number">98%</span>
+                <span className="stat-preview-label">задоволених</span>
+              </div>
+              <div className="stat-preview">
+                <span className="stat-preview-number">24-48</span>
+                <span className="stat-preview-label">годин</span>
+              </div>
             </div>
           </div>
         </div>
@@ -340,50 +351,38 @@ export default function Home() {
           </p>
           <div className="portfolio-grid">
             <div className="portfolio-item">
-              <div className="video-container">
-                <iframe
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&controls=1"
-                  title="Приклад відео - Весілля"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="portfolio-video"
-                ></iframe>
-                <div className="video-overlay">
-                  <div className="video-label">Романтичне відео з весільної церемонії</div>
+              <div className="video-placeholder-card">
+                <div className="video-placeholder-icon">
+                  <Video size={64} />
                 </div>
+                <h3>Весілля</h3>
+                <p>Романтичне відео з весільної церемонії</p>
+                <div className="video-placeholder-badge">Приклад роботи</div>
               </div>
             </div>
             <div className="portfolio-item">
-              <div className="video-container">
-                <iframe
-                  src="https://www.youtube.com/embed/jNQXAC9IVRw?rel=0&modestbranding=1&controls=1"
-                  title="Приклад відео - День народження"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="portfolio-video"
-                ></iframe>
-                <div className="video-overlay">
-                  <div className="video-label">Веселе відео з дня народження</div>
+              <div className="video-placeholder-card">
+                <div className="video-placeholder-icon">
+                  <Video size={64} />
                 </div>
+                <h3>День народження</h3>
+                <p>Веселе відео з дня народження</p>
+                <div className="video-placeholder-badge">Приклад роботи</div>
               </div>
             </div>
             <div className="portfolio-item">
-              <div className="video-container">
-                <iframe
-                  src="https://www.youtube.com/embed/9bZkp7q19f0?rel=0&modestbranding=1&controls=1"
-                  title="Приклад відео - Ювілей"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="portfolio-video"
-                ></iframe>
-                <div className="video-overlay">
-                  <div className="video-label">Торжественне відео до ювілею</div>
+              <div className="video-placeholder-card">
+                <div className="video-placeholder-icon">
+                  <Video size={64} />
                 </div>
+                <h3>Ювілей</h3>
+                <p>Торжественне відео до ювілею</p>
+                <div className="video-placeholder-badge">Приклад роботи</div>
               </div>
             </div>
+          </div>
+          <div className="portfolio-note">
+            <p>Для перегляду реальних прикладів наших робіт, будь ласка, зв'яжіться з нами через Telegram</p>
           </div>
         </div>
       </section>
@@ -551,7 +550,7 @@ export default function Home() {
               <h4>Контакти</h4>
               <a href="https://t.me/oleg030696" target="_blank" rel="noopener noreferrer" className="footer-link">
                 <MessageCircle size={18} />
-                Telegram: @oleg030696
+                Telegram
               </a>
             </div>
             <div className="footer-section">
