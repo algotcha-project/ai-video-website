@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video, MessageCircle, X, Send, Sparkle as SparkleIcon, Star, Award, Clock, Zap, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video, MessageCircle, X, Send, Sparkle as SparkleIcon, Star, Award, Clock, Zap, CheckCircle, AlertCircle } from 'lucide-react'
 import './page.css'
 
 interface Video {
@@ -22,7 +22,6 @@ export default function Home() {
     message: ''
   })
   
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'success' | 'error' | null
     message: string
@@ -111,49 +110,49 @@ export default function Home() {
     }
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
-    setSubmitStatus({ type: null, message: '' })
-
-    try {
-      const response = await fetch('/api/submit-form', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const result = await response.json()
-
-      if (response.ok) {
-        setSubmitStatus({
-          type: 'success',
-          message: 'Дякуємо за заявку! Ми зв\'яжемося з вами найближчим часом. 🎉'
-        })
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          occasion: '',
-          videoCount: '1',
-          message: ''
-        })
-      } else {
-        setSubmitStatus({
-          type: 'error',
-          message: result.error || 'Помилка відправки. Спробуйте пізніше.'
-        })
-      }
-    } catch (error) {
-      setSubmitStatus({
-        type: 'error',
-        message: 'Помилка з\'єднання. Спробуйте пізніше або напишіть нам в Telegram.'
-      })
-    } finally {
-      setIsSubmitting(false)
+    
+    // Format occasion label
+    const occasionLabels: Record<string, string> = {
+      wedding: 'Весілля',
+      birthday: 'День народження',
+      anniversary: 'Ювілей',
+      corporate: 'Корпоратив',
+      other: 'Інше'
     }
+    
+    const occasionLabel = occasionLabels[formData.occasion] || formData.occasion
+    
+    // Build the message for Telegram
+    const message = `🎬 НОВА ЗАЯВКА НА ВІДЕО
+
+👤 Ім'я: ${formData.name}
+📱 Телефон: ${formData.phone}
+${formData.email ? `📧 Email: ${formData.email}` : ''}
+
+📅 Тип події: ${occasionLabel}
+🎥 Кількість відео: ${formData.videoCount}
+
+${formData.message ? `💬 Додаткова інформація:\n${formData.message}` : ''}`
+
+    // Open Telegram with the pre-filled message
+    const telegramUrl = `https://t.me/oleg030696?text=${encodeURIComponent(message.trim())}`
+    window.open(telegramUrl, '_blank')
+    
+    // Show success message and reset form
+    setSubmitStatus({
+      type: 'success',
+      message: 'Telegram відкрито! Надішліть повідомлення, щоб завершити замовлення. 🎉'
+    })
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      occasion: '',
+      videoCount: '1',
+      message: ''
+    })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -657,19 +656,9 @@ export default function Home() {
             <button 
               type="submit" 
               className="btn btn-primary form-submit"
-              disabled={isSubmitting}
             >
-              {isSubmitting ? (
-                <>
-                  <Loader2 size={20} className="spinner" />
-                  Відправка...
-                </>
-              ) : (
-                <>
-                  Відправити заявку
-                  <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
-                </>
-              )}
+              Відправити в Telegram
+              <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
             </button>
           </form>
         </div>
