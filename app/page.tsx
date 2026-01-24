@@ -4,6 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video, MessageCircle, X, Send, Sparkle as SparkleIcon, Star, Award, Clock, Zap } from 'lucide-react'
 import './page.css'
 
+interface Video {
+  id: string
+  title: string
+  description: string
+  url: string
+  type: string
+}
+
 export default function Home() {
   const [formData, setFormData] = useState({
     name: '',
@@ -16,8 +24,17 @@ export default function Home() {
   
   const [chatOpen, setChatOpen] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
+  const [adminVideos, setAdminVideos] = useState<Video[]>([])
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<Array<{x: number, y: number, vx: number, vy: number, size: number}>>([])
+
+  useEffect(() => {
+    // Load videos from localStorage
+    const storedVideos = localStorage.getItem('adminVideos')
+    if (storedVideos) {
+      setAdminVideos(JSON.parse(storedVideos))
+    }
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -359,40 +376,91 @@ export default function Home() {
             Подивіться на приклади наших відео, створених для різних подій
           </p>
           <div className="portfolio-grid">
-            <div className="portfolio-item">
-              <div className="video-placeholder-card">
-                <div className="video-placeholder-icon">
-                  <Video size={64} />
+            {adminVideos.length > 0 ? (
+              adminVideos.map((video) => {
+                // Extract video ID from YouTube URL
+                const getVideoId = (url: string) => {
+                  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+                  const match = url.match(regExp)
+                  return (match && match[2].length === 11) ? match[2] : null
+                }
+
+                const videoId = getVideoId(video.url)
+                const embedUrl = videoId 
+                  ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1`
+                  : video.url
+
+                return (
+                  <div key={video.id} className="portfolio-item">
+                    <div className="video-container">
+                      {videoId ? (
+                        <iframe
+                          src={embedUrl}
+                          title={video.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="portfolio-video"
+                        ></iframe>
+                      ) : (
+                        <div className="video-placeholder-card">
+                          <div className="video-placeholder-icon">
+                            <Video size={64} />
+                          </div>
+                          <h3>{video.title}</h3>
+                          <p>{video.description || 'Відео'}</p>
+                          <a href={video.url} target="_blank" rel="noopener noreferrer" className="video-placeholder-badge" style={{ textDecoration: 'none', display: 'inline-block', marginTop: '12px' }}>
+                            Переглянути відео
+                          </a>
+                        </div>
+                      )}
+                      <div className="video-overlay">
+                        <div className="video-label">{video.title}</div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            ) : (
+              <>
+                <div className="portfolio-item">
+                  <div className="video-placeholder-card">
+                    <div className="video-placeholder-icon">
+                      <Video size={64} />
+                    </div>
+                    <h3>Весілля</h3>
+                    <p>Романтичне відео з весільної церемонії</p>
+                    <div className="video-placeholder-badge">Приклад роботи</div>
+                  </div>
                 </div>
-                <h3>Весілля</h3>
-                <p>Романтичне відео з весільної церемонії</p>
-                <div className="video-placeholder-badge">Приклад роботи</div>
-              </div>
-            </div>
-            <div className="portfolio-item">
-              <div className="video-placeholder-card">
-                <div className="video-placeholder-icon">
-                  <Video size={64} />
+                <div className="portfolio-item">
+                  <div className="video-placeholder-card">
+                    <div className="video-placeholder-icon">
+                      <Video size={64} />
+                    </div>
+                    <h3>День народження</h3>
+                    <p>Веселе відео з дня народження</p>
+                    <div className="video-placeholder-badge">Приклад роботи</div>
+                  </div>
                 </div>
-                <h3>День народження</h3>
-                <p>Веселе відео з дня народження</p>
-                <div className="video-placeholder-badge">Приклад роботи</div>
-              </div>
-            </div>
-            <div className="portfolio-item">
-              <div className="video-placeholder-card">
-                <div className="video-placeholder-icon">
-                  <Video size={64} />
+                <div className="portfolio-item">
+                  <div className="video-placeholder-card">
+                    <div className="video-placeholder-icon">
+                      <Video size={64} />
+                    </div>
+                    <h3>Ювілей</h3>
+                    <p>Торжественне відео до ювілею</p>
+                    <div className="video-placeholder-badge">Приклад роботи</div>
+                  </div>
                 </div>
-                <h3>Ювілей</h3>
-                <p>Торжественне відео до ювілею</p>
-                <div className="video-placeholder-badge">Приклад роботи</div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
-          <div className="portfolio-note">
-            <p>Для перегляду реальних прикладів наших робіт, будь ласка, зв'яжіться з нами через Telegram</p>
-          </div>
+          {adminVideos.length === 0 && (
+            <div className="portfolio-note">
+              <p>Для перегляду реальних прикладів наших робіт, будь ласка, зв'яжіться з нами через Telegram</p>
+            </div>
+          )}
         </div>
       </section>
 
