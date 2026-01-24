@@ -186,36 +186,18 @@ export default function Home() {
         </div>
         <div className="container">
           <div className="hero-content">
-            <div className="hero-badge">
-              <Sparkles size={16} />
-              <span>AI-технології нового покоління</span>
-            </div>
             <h1 className="hero-title">
-              Перетворюємо ваші <span className="highlight">спогади</span> у <span className="highlight">відео</span>
+              AI-відео з ваших <span className="highlight">фотографій</span>
             </h1>
             <p className="hero-subtitle">
-              Професійні AI-відео з ваших фотографій для будь-якої події. Весілля, дні народження, ювілеї та інші особливі моменти життя
+              Створюємо унікальні відео для ваших особливих моментів
             </p>
             <div className="hero-buttons">
               <a href="#order" className="btn btn-primary">
-                Замовити відео
-                <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
+                Замовити
+                <ArrowRight size={18} style={{ marginLeft: '8px', display: 'inline-block' }} />
               </a>
-              <a href="#portfolio" className="btn btn-secondary">Переглянути роботи</a>
-            </div>
-            <div className="hero-stats-preview">
-              <div className="stat-preview">
-                <span className="stat-preview-number">500+</span>
-                <span className="stat-preview-label">відео</span>
-              </div>
-              <div className="stat-preview">
-                <span className="stat-preview-number">98%</span>
-                <span className="stat-preview-label">задоволених</span>
-              </div>
-              <div className="stat-preview">
-                <span className="stat-preview-number">24-48</span>
-                <span className="stat-preview-label">годин</span>
-              </div>
+              <a href="#portfolio" className="btn btn-secondary">Портфоліо</a>
             </div>
           </div>
         </div>
