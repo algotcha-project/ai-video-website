@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video, MessageCircle, X, Send, Sparkle as SparkleIcon, Star, Award, Clock, Zap } from 'lucide-react'
 import './page.css'
 
@@ -16,6 +16,77 @@ export default function Home() {
   
   const [chatOpen, setChatOpen] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const particlesRef = useRef<Array<{x: number, y: number, vx: number, vy: number, size: number}>>([])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+    resizeCanvas()
+    window.addEventListener('resize', resizeCanvas)
+
+    // Initialize particles
+    const particleCount = 50
+    particlesRef.current = Array.from({ length: particleCount }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      size: Math.random() * 2 + 1
+    }))
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      
+      // Update and draw particles
+      particlesRef.current.forEach(particle => {
+        particle.x += particle.vx
+        particle.y += particle.vy
+
+        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1
+        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1
+
+        ctx.beginPath()
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.1)'
+        ctx.fill()
+      })
+
+      // Draw connections
+      particlesRef.current.forEach((particle, i) => {
+        particlesRef.current.slice(i + 1).forEach(otherParticle => {
+          const dx = particle.x - otherParticle.x
+          const dy = particle.y - otherParticle.y
+          const distance = Math.sqrt(dx * dx + dy * dy)
+
+          if (distance < 150) {
+            ctx.beginPath()
+            ctx.moveTo(particle.x, particle.y)
+            ctx.lineTo(otherParticle.x, otherParticle.y)
+            ctx.strokeStyle = `rgba(99, 102, 241, ${0.2 * (1 - distance / 150)})`
+            ctx.lineWidth = 0.5
+            ctx.stroke()
+          }
+        })
+      })
+
+      requestAnimationFrame(animate)
+    }
+
+    animate()
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas)
+    }
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,9 +127,13 @@ export default function Home() {
           <div className="chat-container">
             <div className="chat-header">
               <div className="chat-header-info">
-                <div className="chat-avatar">O</div>
+                <div className="chat-telegram-logo">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161l-1.84 8.678c-.135.608-.479.758-.97.473l-2.677-1.97-1.29 1.24c-.146.146-.269.269-.552.269l.197-2.78 4.942-4.466c.216-.191-.047-.297-.335-.105l-6.105 3.846-2.637-.823c-.574-.179-.589-.574.12-.87l10.32-3.977c.478-.18.896.112.74.694z"/>
+                  </svg>
+                </div>
                 <div>
-                  <h4>Олег</h4>
+                  <h4>Telegram</h4>
                   <p>Онлайн</p>
                 </div>
               </div>
@@ -99,11 +174,25 @@ export default function Home() {
       </div>
       {/* Hero Section */}
       <section className="hero">
+        <canvas ref={canvasRef} className="particles-canvas"></canvas>
         <div className="hero-background">
           <div className="gradient-overlay"></div>
+          <div className="floating-shapes">
+            <div className="shape shape-1"></div>
+            <div className="shape shape-2"></div>
+            <div className="shape shape-3"></div>
+            <div className="shape shape-4"></div>
+          </div>
         </div>
         <div className="container">
           <div className="hero-content">
+            <div className="logo-container">
+              <div className="logo">
+                <Video size={48} />
+                <Sparkles size={32} className="logo-sparkle" />
+              </div>
+              <h2 className="site-name">MemoriaAI</h2>
+            </div>
             <h1 className="hero-title">
               Створюємо унікальні <span className="highlight">AI-відео</span> з ваших фотографій
             </h1>
@@ -252,52 +341,46 @@ export default function Home() {
           <div className="portfolio-grid">
             <div className="portfolio-item">
               <div className="video-container">
-                <div className="video-placeholder">
-                  <div className="video-pattern"></div>
-                  <div className="video-content">
-                    <div className="play-button-large">
-                      <Play size={48} fill="currentColor" />
-                    </div>
-                    <h4>Весілля</h4>
-                    <p>Романтичне відео з весільної церемонії</p>
-                  </div>
-                </div>
+                <iframe
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&controls=1"
+                  title="Приклад відео - Весілля"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="portfolio-video"
+                ></iframe>
                 <div className="video-overlay">
-                  <div className="video-label">Весілля</div>
+                  <div className="video-label">Романтичне відео з весільної церемонії</div>
                 </div>
               </div>
             </div>
             <div className="portfolio-item">
               <div className="video-container">
-                <div className="video-placeholder">
-                  <div className="video-pattern"></div>
-                  <div className="video-content">
-                    <div className="play-button-large">
-                      <Play size={48} fill="currentColor" />
-                    </div>
-                    <h4>День народження</h4>
-                    <p>Веселе відео з дня народження</p>
-                  </div>
-                </div>
+                <iframe
+                  src="https://www.youtube.com/embed/jNQXAC9IVRw?rel=0&modestbranding=1&controls=1"
+                  title="Приклад відео - День народження"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="portfolio-video"
+                ></iframe>
                 <div className="video-overlay">
-                  <div className="video-label">День народження</div>
+                  <div className="video-label">Веселе відео з дня народження</div>
                 </div>
               </div>
             </div>
             <div className="portfolio-item">
               <div className="video-container">
-                <div className="video-placeholder">
-                  <div className="video-pattern"></div>
-                  <div className="video-content">
-                    <div className="play-button-large">
-                      <Play size={48} fill="currentColor" />
-                    </div>
-                    <h4>Ювілей</h4>
-                    <p>Торжественне відео до ювілею</p>
-                  </div>
-                </div>
+                <iframe
+                  src="https://www.youtube.com/embed/9bZkp7q19f0?rel=0&modestbranding=1&controls=1"
+                  title="Приклад відео - Ювілей"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="portfolio-video"
+                ></iframe>
                 <div className="video-overlay">
-                  <div className="video-label">Ювілей</div>
+                  <div className="video-label">Торжественне відео до ювілею</div>
                 </div>
               </div>
             </div>
