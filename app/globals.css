@@ -148,21 +148,4 @@ body {
   transform: translateY(-3px);
 }
 
-@media (max-width: 768px) {
-  .section {
-    padding: 60px 0;
-  }
-  
-  .section-title {
-    font-size: 2rem;
-  }
-  
-  .section-subtitle {
-    font-size: 1rem;
-    margin-bottom: 2.5rem;
-  }
-  
-  .container {
-    padding: 0 20px;
-  }
-}
+/* Mobile base styles are now in page.css */
