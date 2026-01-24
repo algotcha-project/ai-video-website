@@ -186,18 +186,39 @@ export default function Home() {
         </div>
         <div className="container">
           <div className="hero-content">
+            <div className="logo-container">
+              <div className="logo">
+                <Video size={48} />
+                <Sparkles size={32} className="logo-sparkle" />
+              </div>
+              <h2 className="site-name">MemoriaAI</h2>
+            </div>
             <h1 className="hero-title">
-              AI-відео з ваших <span className="highlight">фотографій</span>
+              Створюємо унікальні <span className="highlight">AI-відео</span> з ваших фотографій
             </h1>
             <p className="hero-subtitle">
-              Створюємо унікальні відео для ваших особливих моментів
+              Професійні відео на замовлення для будь-якої події: весілля, дні народження, ювілеї та інші особливі моменти життя
             </p>
             <div className="hero-buttons">
               <a href="#order" className="btn btn-primary">
-                Замовити
-                <ArrowRight size={18} style={{ marginLeft: '8px', display: 'inline-block' }} />
+                Замовити відео
+                <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
               </a>
-              <a href="#portfolio" className="btn btn-secondary">Портфоліо</a>
+              <a href="#portfolio" className="btn btn-secondary">Переглянути роботи</a>
+            </div>
+            <div className="hero-stats-preview">
+              <div className="stat-preview">
+                <span className="stat-preview-number">500+</span>
+                <span className="stat-preview-label">відео</span>
+              </div>
+              <div className="stat-preview">
+                <span className="stat-preview-number">98%</span>
+                <span className="stat-preview-label">задоволених</span>
+              </div>
+              <div className="stat-preview">
+                <span className="stat-preview-number">24-48</span>
+                <span className="stat-preview-label">годин</span>
+              </div>
             </div>
           </div>
         </div>
