@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video, MessageCircle, X, Send, Sparkle as SparkleIcon, Star, Award, Clock, Zap } from 'lucide-react'
+import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video, MessageCircle, X, Send, Sparkle as SparkleIcon, Star, Award, Clock, Zap, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import './page.css'
 
 interface Video {
@@ -21,6 +21,12 @@ export default function Home() {
     videoCount: '1',
     message: ''
   })
+  
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null
+    message: string
+  }>({ type: null, message: '' })
   
   const [chatOpen, setChatOpen] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
@@ -105,18 +111,49 @@ export default function Home() {
     }
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the form data to your backend
-    alert('Дякуємо за заявку! Ми зв\'яжемося з вами найближчим часом.')
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      occasion: '',
-      videoCount: '1',
-      message: ''
-    })
+    setIsSubmitting(true)
+    setSubmitStatus({ type: null, message: '' })
+
+    try {
+      const response = await fetch('/api/submit-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: 'success',
+          message: 'Дякуємо за заявку! Ми зв\'яжемося з вами найближчим часом. 🎉'
+        })
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          occasion: '',
+          videoCount: '1',
+          message: ''
+        })
+      } else {
+        setSubmitStatus({
+          type: 'error',
+          message: result.error || 'Помилка відправки. Спробуйте пізніше.'
+        })
+      }
+    } catch (error) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Помилка з\'єднання. Спробуйте пізніше або напишіть нам в Telegram.'
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -607,9 +644,32 @@ export default function Home() {
                 placeholder="Опишіть вашу подію, побажання щодо стилю, музики або інші деталі..."
               />
             </div>
-            <button type="submit" className="btn btn-primary form-submit">
-              Відправити заявку
-              <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
+            {submitStatus.type && (
+              <div className={`form-status ${submitStatus.type}`}>
+                {submitStatus.type === 'success' ? (
+                  <CheckCircle size={20} />
+                ) : (
+                  <AlertCircle size={20} />
+                )}
+                <span>{submitStatus.message}</span>
+              </div>
+            )}
+            <button 
+              type="submit" 
+              className="btn btn-primary form-submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={20} className="spinner" />
+                  Відправка...
+                </>
+              ) : (
+                <>
+                  Відправити заявку
+                  <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
+                </>
+              )}
             </button>
           </form>
         </div>
