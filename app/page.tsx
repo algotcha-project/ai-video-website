@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video } from 'lucide-react'
 import './page.css'
 
 export default function Home() {
@@ -50,7 +51,10 @@ export default function Home() {
               Професійні відео на замовлення для будь-якої події: весілля, дні народження, ювілеї та інші особливі моменти життя
             </p>
             <div className="hero-buttons">
-              <a href="#order" className="btn btn-primary">Замовити відео</a>
+              <a href="#order" className="btn btn-primary">
+                Замовити відео
+                <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
+              </a>
               <a href="#portfolio" className="btn btn-secondary">Переглянути роботи</a>
             </div>
           </div>
@@ -66,22 +70,30 @@ export default function Home() {
           </p>
           <div className="services-grid">
             <div className="service-card">
-              <div className="service-icon">📸</div>
+              <div className="service-icon-wrapper">
+                <Camera className="service-icon" size={48} strokeWidth={1.5} />
+              </div>
               <h3>Індивідуальний підхід</h3>
               <p>Кожне відео створюється індивідуально під ваші фотографії та побажання</p>
             </div>
             <div className="service-card">
-              <div className="service-icon">🎵</div>
+              <div className="service-icon-wrapper">
+                <Music className="service-icon" size={48} strokeWidth={1.5} />
+              </div>
               <h3>Вибір музики</h3>
               <p>Ви обираєте музику, яка найкраще передає атмосферу вашої події</p>
             </div>
             <div className="service-card">
-              <div className="service-icon">✨</div>
+              <div className="service-icon-wrapper">
+                <Sparkles className="service-icon" size={48} strokeWidth={1.5} />
+              </div>
               <h3>Професійні ефекти</h3>
               <p>Сучасні AI-ефекти та анімації для створення незабутнього відео</p>
             </div>
             <div className="service-card">
-              <div className="service-icon">🎬</div>
+              <div className="service-icon-wrapper">
+                <Film className="service-icon" size={48} strokeWidth={1.5} />
+              </div>
               <h3>Будь-яка подія</h3>
               <p>Весілля, дні народження, ювілеї, корпоративи та інші особливі моменти</p>
             </div>
@@ -106,10 +118,10 @@ export default function Home() {
                 </div>
               </div>
               <ul className="pricing-features">
-                <li>Вартість залежить від тривалості</li>
-                <li>Вибір ефектів та стилю</li>
-                <li>Ваша музика</li>
-                <li>Готове відео високої якості</li>
+                <li><Check size={18} /> Вартість залежить від тривалості</li>
+                <li><Check size={18} /> Вибір ефектів та стилю</li>
+                <li><Check size={18} /> Ваша музика</li>
+                <li><Check size={18} /> Готове відео високої якості</li>
               </ul>
             </div>
             <div className="pricing-card featured">
@@ -121,10 +133,10 @@ export default function Home() {
                 </div>
               </div>
               <ul className="pricing-features">
-                <li>Знижка на кожне відео</li>
-                <li>Пріоритетна обробка</li>
-                <li>Додаткові ефекти безкоштовно</li>
-                <li>Індивідуальний підхід</li>
+                <li><Check size={18} /> Знижка на кожне відео</li>
+                <li><Check size={18} /> Пріоритетна обробка</li>
+                <li><Check size={18} /> Додаткові ефекти безкоштовно</li>
+                <li><Check size={18} /> Індивідуальний підхід</li>
               </ul>
             </div>
           </div>
@@ -144,19 +156,25 @@ export default function Home() {
           <div className="portfolio-grid">
             <div className="portfolio-item">
               <div className="portfolio-placeholder">
-                <div className="play-icon">▶</div>
+                <div className="play-icon-wrapper">
+                  <Play className="play-icon" size={64} fill="currentColor" />
+                </div>
                 <p>Приклад відео</p>
               </div>
             </div>
             <div className="portfolio-item">
               <div className="portfolio-placeholder">
-                <div className="play-icon">▶</div>
+                <div className="play-icon-wrapper">
+                  <Play className="play-icon" size={64} fill="currentColor" />
+                </div>
                 <p>Приклад відео</p>
               </div>
             </div>
             <div className="portfolio-item">
               <div className="portfolio-placeholder">
-                <div className="play-icon">▶</div>
+                <div className="play-icon-wrapper">
+                  <Play className="play-icon" size={64} fill="currentColor" />
+                </div>
                 <p>Приклад відео</p>
               </div>
             </div>
@@ -256,6 +274,7 @@ export default function Home() {
             </div>
             <button type="submit" className="btn btn-primary form-submit">
               Відправити заявку
+              <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
             </button>
           </form>
         </div>
