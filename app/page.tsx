@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video } from 'lucide-react'
+import { Camera, Music, Sparkles, Film, Play, Check, ArrowRight, Mail, Phone, User, Calendar, Video, MessageCircle, X, Send, Sparkle as SparkleIcon, Star, Award, Clock, Zap } from 'lucide-react'
 import './page.css'
 
 export default function Home() {
@@ -13,6 +13,9 @@ export default function Home() {
     videoCount: '1',
     message: ''
   })
+  
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatMessage, setChatMessage] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,8 +38,65 @@ export default function Home() {
     })
   }
 
+  const handleChatSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (chatMessage.trim()) {
+      const telegramUrl = `https://t.me/oleg030696?text=${encodeURIComponent(chatMessage)}`
+      window.open(telegramUrl, '_blank')
+      setChatMessage('')
+      setChatOpen(false)
+    }
+  }
+
   return (
     <main>
+      {/* Floating Chat Widget */}
+      <div className={`chat-widget ${chatOpen ? 'chat-open' : ''}`}>
+        {chatOpen ? (
+          <div className="chat-container">
+            <div className="chat-header">
+              <div className="chat-header-info">
+                <div className="chat-avatar">O</div>
+                <div>
+                  <h4>Олег</h4>
+                  <p>Онлайн</p>
+                </div>
+              </div>
+              <button className="chat-close" onClick={() => setChatOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="chat-messages">
+              <div className="chat-message bot">
+                <p>Привіт! Я готовий відповісти на ваші питання про створення AI-відео. Напишіть мені в Telegram!</p>
+              </div>
+            </div>
+            <form onSubmit={handleChatSubmit} className="chat-input-form">
+              <input
+                type="text"
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                placeholder="Напишіть повідомлення..."
+                className="chat-input"
+              />
+              <button type="submit" className="chat-send">
+                <Send size={18} />
+              </button>
+            </form>
+            <div className="chat-telegram-link">
+              <a href="https://t.me/oleg030696" target="_blank" rel="noopener noreferrer" className="btn-telegram">
+                <MessageCircle size={18} />
+                Відкрити Telegram
+              </a>
+            </div>
+          </div>
+        ) : (
+          <button className="chat-toggle" onClick={() => setChatOpen(true)}>
+            <MessageCircle size={24} />
+            <span className="chat-badge">1</span>
+          </button>
+        )}
+      </div>
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-background">
@@ -56,6 +116,42 @@ export default function Home() {
                 <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline-block' }} />
               </a>
               <a href="#portfolio" className="btn btn-secondary">Переглянути роботи</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="section stats">
+        <div className="container">
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Video size={32} />
+              </div>
+              <div className="stat-number">500+</div>
+              <div className="stat-label">Створених відео</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Star size={32} />
+              </div>
+              <div className="stat-number">98%</div>
+              <div className="stat-label">Задоволених клієнтів</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Clock size={32} />
+              </div>
+              <div className="stat-number">24-48</div>
+              <div className="stat-label">Годин на виконання</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Award size={32} />
+              </div>
+              <div className="stat-number">5+</div>
+              <div className="stat-label">Років досвіду</div>
             </div>
           </div>
         </div>
@@ -155,28 +251,108 @@ export default function Home() {
           </p>
           <div className="portfolio-grid">
             <div className="portfolio-item">
-              <div className="portfolio-placeholder">
-                <div className="play-icon-wrapper">
-                  <Play className="play-icon" size={64} fill="currentColor" />
+              <div className="video-container">
+                <div className="video-placeholder">
+                  <div className="video-pattern"></div>
+                  <div className="video-content">
+                    <div className="play-button-large">
+                      <Play size={48} fill="currentColor" />
+                    </div>
+                    <h4>Весілля</h4>
+                    <p>Романтичне відео з весільної церемонії</p>
+                  </div>
                 </div>
-                <p>Приклад відео</p>
+                <div className="video-overlay">
+                  <div className="video-label">Весілля</div>
+                </div>
               </div>
             </div>
             <div className="portfolio-item">
-              <div className="portfolio-placeholder">
-                <div className="play-icon-wrapper">
-                  <Play className="play-icon" size={64} fill="currentColor" />
+              <div className="video-container">
+                <div className="video-placeholder">
+                  <div className="video-pattern"></div>
+                  <div className="video-content">
+                    <div className="play-button-large">
+                      <Play size={48} fill="currentColor" />
+                    </div>
+                    <h4>День народження</h4>
+                    <p>Веселе відео з дня народження</p>
+                  </div>
                 </div>
-                <p>Приклад відео</p>
+                <div className="video-overlay">
+                  <div className="video-label">День народження</div>
+                </div>
               </div>
             </div>
             <div className="portfolio-item">
-              <div className="portfolio-placeholder">
-                <div className="play-icon-wrapper">
-                  <Play className="play-icon" size={64} fill="currentColor" />
+              <div className="video-container">
+                <div className="video-placeholder">
+                  <div className="video-pattern"></div>
+                  <div className="video-content">
+                    <div className="play-button-large">
+                      <Play size={48} fill="currentColor" />
+                    </div>
+                    <h4>Ювілей</h4>
+                    <p>Торжественне відео до ювілею</p>
+                  </div>
                 </div>
-                <p>Приклад відео</p>
+                <div className="video-overlay">
+                  <div className="video-label">Ювілей</div>
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Process Section */}
+      <section className="section process">
+        <div className="container">
+          <h2 className="section-title">Як ми працюємо</h2>
+          <p className="section-subtitle">
+            Простий процес створення вашого унікального відео
+          </p>
+          <div className="process-steps">
+            <div className="process-step">
+              <div className="process-number">1</div>
+              <div className="process-icon">
+                <Mail size={32} />
+              </div>
+              <h3>Залиште заявку</h3>
+              <p>Заповніть форму або напишіть нам в Telegram</p>
+            </div>
+            <div className="process-arrow">
+              <ArrowRight size={32} />
+            </div>
+            <div className="process-step">
+              <div className="process-number">2</div>
+              <div className="process-icon">
+                <Camera size={32} />
+              </div>
+              <h3>Надішліть фотографії</h3>
+              <p>Відправте ваші найкращі фото та оберіть музику</p>
+            </div>
+            <div className="process-arrow">
+              <ArrowRight size={32} />
+            </div>
+            <div className="process-step">
+              <div className="process-number">3</div>
+              <div className="process-icon">
+                <Sparkles size={32} />
+              </div>
+              <h3>Ми створюємо</h3>
+              <p>Додаємо ефекти, анімації та обробляємо відео</p>
+            </div>
+            <div className="process-arrow">
+              <ArrowRight size={32} />
+            </div>
+            <div className="process-step">
+              <div className="process-number">4</div>
+              <div className="process-icon">
+                <Zap size={32} />
+              </div>
+              <h3>Отримайте результат</h3>
+              <p>Готове відео високої якості за 24-48 годин</p>
             </div>
           </div>
         </div>
@@ -283,7 +459,29 @@ export default function Home() {
       {/* Footer */}
       <footer className="footer">
         <div className="container">
-          <p>&copy; 2026 AI Відео з Фотографій. Всі права захищені.</p>
+          <div className="footer-content">
+            <div className="footer-section">
+              <h3>AI Відео з Фотографій</h3>
+              <p>Створюємо унікальні відео з ваших спогадів</p>
+            </div>
+            <div className="footer-section">
+              <h4>Контакти</h4>
+              <a href="https://t.me/oleg030696" target="_blank" rel="noopener noreferrer" className="footer-link">
+                <MessageCircle size={18} />
+                Telegram: @oleg030696
+              </a>
+            </div>
+            <div className="footer-section">
+              <h4>Послуги</h4>
+              <p>AI-відео для весіль</p>
+              <p>Відео для днів народження</p>
+              <p>Ювілейні відео</p>
+              <p>Корпоративні відео</p>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <p>&copy; 2026 AI Відео з Фотографій. Всі права захищені.</p>
+          </div>
         </div>
       </footer>
     </main>
