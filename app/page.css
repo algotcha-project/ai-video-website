@@ -323,6 +323,35 @@
   flex-wrap: wrap;
 }
 
+.hero-contact {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.hero-phone:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
 /* Services Section - Modern Cards */
 .services {
   background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);

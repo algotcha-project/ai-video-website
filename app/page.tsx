@@ -206,6 +206,12 @@ export default function Home() {
               </a>
               <a href="#portfolio" className="btn btn-secondary">Переглянути роботи</a>
             </div>
+            <div className="hero-contact">
+              <a href="tel:+380968753003" className="hero-phone">
+                <Phone size={18} />
+                +380 96 875 3003
+              </a>
+            </div>
             <div className="hero-stats-preview">
               <div className="stat-preview">
                 <span className="stat-preview-number">500+</span>
@@ -551,6 +557,10 @@ export default function Home() {
             </div>
             <div className="footer-section">
               <h4>Контакти</h4>
+              <a href="tel:+380968753003" className="footer-link">
+                <Phone size={18} />
+                +380 96 875 3003
+              </a>
               <a href="https://t.me/oleg030696" target="_blank" rel="noopener noreferrer" className="footer-link">
                 <MessageCircle size={18} />
                 Telegram
