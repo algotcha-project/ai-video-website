@@ -105,11 +105,12 @@ class TelegramBot:
     def send_new_product_alert(self, product: dict) -> int:
         """
         Send a formatted new product notification to all chats.
-        product dict should have: name, url, price, product_no, category
+        product dict should have: name, url, price_uah, price_krw, product_no, category
         """
         name = product.get("name", "Unknown")
         url = product.get("url", "")
-        price = product.get("price", "")
+        price_uah = product.get("price_uah", "")
+        price_krw = product.get("price_krw", "")
         product_no = product.get("product_no", "")
         category = product.get("category", "")
 
@@ -119,8 +120,13 @@ class TelegramBot:
             f"📦 <b>{_escape_html(name)}</b>",
         ]
 
-        if price:
-            lines.append(f"💰 Ціна: {_escape_html(price)}")
+        if price_uah:
+            price_line = f"💰 Ціна: <b>{_escape_html(price_uah)}</b>"
+            if price_krw:
+                price_line += f" ({_escape_html(price_krw)})"
+            lines.append(price_line)
+        elif price_krw:
+            lines.append(f"💰 Ціна: {_escape_html(price_krw)}")
 
         if category:
             lines.append(f"📂 Категорія: {_escape_html(category)}")

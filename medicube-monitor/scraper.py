@@ -10,6 +10,8 @@ import requests
 from bs4 import BeautifulSoup
 from typing import Dict, Optional
 
+from currency import get_krw_to_uah_rate, convert_price
+
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://m.themedicube.co.kr"
@@ -65,11 +67,14 @@ class Product:
     """Represents a single product from Medicube."""
 
     def __init__(self, product_no: str, name: str, url: str, price: str = "",
+                 price_uah: str = "", price_krw: str = "",
                  image_url: str = "", category: str = ""):
         self.product_no = product_no
         self.name = name
         self.url = url
-        self.price = price
+        self.price = price          # Display price (UAH if converted, otherwise KRW)
+        self.price_uah = price_uah  # Price in UAH (formatted string)
+        self.price_krw = price_krw  # Original KRW price
         self.image_url = image_url
         self.category = category
 
@@ -79,6 +84,8 @@ class Product:
             "name": self.name,
             "url": self.url,
             "price": self.price,
+            "price_uah": self.price_uah,
+            "price_krw": self.price_krw,
             "image_url": self.image_url,
             "category": self.category,
         }
@@ -90,6 +97,8 @@ class Product:
             name=data["name"],
             url=data["url"],
             price=data.get("price", ""),
+            price_uah=data.get("price_uah", ""),
+            price_krw=data.get("price_krw", ""),
             image_url=data.get("image_url", ""),
             category=data.get("category", ""),
         )
@@ -98,7 +107,8 @@ class Product:
         return f"Product(#{self.product_no}: {self.name})"
 
 
-def _parse_products_from_page(html: str, category_name: str = "") -> Dict[str, Product]:
+def _parse_products_from_page(html: str, category_name: str = "",
+                              exchange_rate: Optional[float] = None) -> Dict[str, Product]:
     """Parse products from a Cafe24 product list page."""
     soup = BeautifulSoup(html, "html.parser")
     products = {}
@@ -175,11 +185,19 @@ def _parse_products_from_page(html: str, category_name: str = "") -> Dict[str, P
             if image_url.startswith("//"):
                 image_url = "https:" + image_url
 
+        # Convert KRW price to UAH
+        price_uah = ""
+        price_krw = price  # original KRW string
+        if price and exchange_rate:
+            price_uah, _ = convert_price(price, rate=exchange_rate)
+
         products[product_no] = Product(
             product_no=product_no,
             name=name,
             url=full_url,
-            price=price,
+            price=price_uah if price_uah else price_krw,  # display UAH if available
+            price_uah=price_uah,
+            price_krw=price_krw,
             image_url=image_url,
             category=category_name,
         )
@@ -188,8 +206,13 @@ def _parse_products_from_page(html: str, category_name: str = "") -> Dict[str, P
 
 
 def scrape_category(cate_no: int, category_name: str = "",
-                    max_pages: int = 5) -> Dict[str, Product]:
+                    max_pages: int = 5,
+                    exchange_rate: Optional[float] = None) -> Dict[str, Product]:
     """Scrape all products from a given category (with pagination)."""
+    # Auto-fetch exchange rate if not provided
+    if exchange_rate is None:
+        exchange_rate = get_krw_to_uah_rate()
+
     all_products = {}
 
     for page in range(1, max_pages + 1):
@@ -201,7 +224,8 @@ def scrape_category(cate_no: int, category_name: str = "",
             logger.warning(f"Failed to fetch category {cate_no} page {page}: {e}")
             break
 
-        page_products = _parse_products_from_page(resp.text, category_name)
+        page_products = _parse_products_from_page(resp.text, category_name,
+                                                   exchange_rate=exchange_rate)
 
         if not page_products:
             break  # No more products on this page
@@ -226,10 +250,16 @@ def scrape_category(cate_no: int, category_name: str = "",
 def scrape_all_products() -> Dict[str, Product]:
     """
     Scrape ALL products from all categories on Medicube Korea.
+    Prices are automatically converted from KRW to UAH using live exchange rate.
     Returns dict of product_no -> Product.
     """
     all_products: Dict[str, Product] = {}
-    
+
+    # Fetch exchange rate once for the entire scraping session
+    logger.info("Fetching KRW → UAH exchange rate...")
+    exchange_rate = get_krw_to_uah_rate()
+    logger.info(f"Exchange rate: 1 KRW = {exchange_rate} UAH")
+
     # Key categories that contain ALL products
     # Using a subset that covers everything without too much overlap
     key_categories = {
@@ -245,7 +275,8 @@ def scrape_all_products() -> Dict[str, Product]:
     for cate_no, cat_name in key_categories.items():
         logger.info(f"Scraping category: {cat_name} (cate_no={cate_no})...")
         try:
-            cat_products = scrape_category(cate_no, cat_name)
+            cat_products = scrape_category(cate_no, cat_name,
+                                           exchange_rate=exchange_rate)
             new_count = sum(1 for pid in cat_products if pid not in all_products)
             all_products.update(cat_products)
             logger.info(f"  -> {len(cat_products)} products ({new_count} new unique)")
