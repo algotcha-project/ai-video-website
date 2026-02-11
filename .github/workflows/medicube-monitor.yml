@@ -1,0 +1,43 @@
+name: Medicube Product Monitor
+
+on:
+  # Run every 24 hours at 00:00 UTC (09:00 KST)
+  schedule:
+    - cron: '0 0 * * *'
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  check-products:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: pip install -r medicube-monitor/requirements.txt
+      
+      - name: Restore product data
+        uses: actions/cache/restore@v4
+        with:
+          path: medicube-monitor/data
+          key: medicube-products-${{ github.run_id }}
+          restore-keys: |
+            medicube-products-
+      
+      - name: Run product check
+        working-directory: medicube-monitor
+        run: python monitor.py --check --verbose
+      
+      - name: Save product data
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: medicube-monitor/data
+          key: medicube-products-${{ github.run_id }}
