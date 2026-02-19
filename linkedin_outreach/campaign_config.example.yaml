@@ -1,0 +1,148 @@
+# =============================================================================
+# LinkedIn Buyer Outreach - Campaign Configuration
+# =============================================================================
+# Copy this file to campaign_config.yaml and fill in your details.
+# Credentials can also be set via environment variables:
+#   LINKEDIN_EMAIL and LINKEDIN_PASSWORD
+# =============================================================================
+
+campaign_name: "my_first_campaign"
+
+# ---------------------------------------------------------------------------
+# LinkedIn Credentials
+# Prefer environment variables over putting passwords in this file.
+# ---------------------------------------------------------------------------
+credentials:
+  email: ""       # or set LINKEDIN_EMAIL env var
+  password: ""    # or set LINKEDIN_PASSWORD env var
+
+# ---------------------------------------------------------------------------
+# Search Criteria - Define your ideal buyer persona
+# ---------------------------------------------------------------------------
+search:
+  # Keywords to search for in profiles (searches headline, summary, etc.)
+  keywords:
+    - "VP of Engineering"
+    - "CTO"
+    - "Head of Technology"
+
+  # Specific job titles to target
+  job_titles:
+    - "Chief Technology Officer"
+    - "VP Engineering"
+    - "Director of Engineering"
+    - "Head of Product"
+
+  # Industries to focus on
+  industries:
+    - "Software Development"
+    - "Information Technology"
+    - "Financial Services"
+
+  # Geographic locations
+  locations:
+    - "United States"
+    - "United Kingdom"
+
+  # Company size ranges: "1-10", "11-50", "51-200", "201-500",
+  #                      "501-1000", "1001-5000", "5001-10000", "10001+"
+  company_sizes:
+    - "51-200"
+    - "201-500"
+    - "501-1000"
+
+  # Keywords to EXCLUDE from results
+  exclude_keywords:
+    - "Recruiter"
+    - "Recruiting"
+    - "Freelance"
+
+  # Connection degree: "1st", "2nd", "3rd"
+  # 2nd-degree connections are ideal for outreach
+  connection_degree: "2nd"
+
+# ---------------------------------------------------------------------------
+# Rate Limits - CRITICAL for avoiding spam detection
+# These are conservative defaults. Do NOT increase them aggressively.
+# ---------------------------------------------------------------------------
+rate_limits:
+  max_connection_requests_per_day: 20   # LinkedIn's safe zone is 20-25/day
+  max_messages_per_day: 30              # Keep under 50
+  max_profile_views_per_day: 80         # Keep under 100
+  min_delay_between_actions_sec: 45     # Minimum wait between any action
+  max_delay_between_actions_sec: 180    # Maximum wait (randomized)
+  daily_start_hour: 8                   # Start outreach at 8 AM
+  daily_end_hour: 20                    # Stop at 8 PM
+  active_days:                          # Only run on weekdays
+    - "Mon"
+    - "Tue"
+    - "Wed"
+    - "Thu"
+    - "Fri"
+
+  # Warmup: Gradually increase activity over the first N days
+  warmup_enabled: true
+  warmup_days: 14          # Ramp up over 2 weeks
+  warmup_start_pct: 0.2    # Start at 20% of max limits
+
+# ---------------------------------------------------------------------------
+# Message Templates
+# ---------------------------------------------------------------------------
+# Use Jinja2 template syntax. Available variables:
+#   {{ first_name }}     - Prospect's first name
+#   {{ last_name }}      - Prospect's last name
+#   {{ full_name }}      - Prospect's full name
+#   {{ job_title }}      - Current job title
+#   {{ company }}        - Current company name
+#   {{ industry }}       - Industry
+#   {{ location }}       - Location
+#   {{ mutual_count }}   - Number of mutual connections
+#   {{ headline }}       - Profile headline
+#   {{ your_name }}      - Your name (from your LinkedIn profile)
+#   {{ your_company }}   - Your company name (set below)
+#   {{ service }}        - Your service description (set below)
+# ---------------------------------------------------------------------------
+messages:
+  # Your details for template rendering
+  your_company: "Acme Solutions"
+  service: "AI-powered workflow automation"
+
+  # Connection request notes (max 300 chars on LinkedIn)
+  # Multiple templates are rotated randomly for variety
+  connection_note_templates:
+    - >
+      Hi {{ first_name }}, I noticed you're leading
+      {{ company }}'s tech efforts. I'd love to connect
+      and exchange ideas on {{ service }}. Always great to
+      meet fellow leaders in {{ industry }}.
+    - >
+      {{ first_name }}, your work at {{ company }} caught my
+      eye. I'm in the {{ industry }} space too and thought
+      it'd be great to connect. Would love to hear your
+      perspective on the challenges you're tackling.
+    - >
+      Hi {{ first_name }}! We have {{ mutual_count }} mutual
+      connections and I see you're doing great things at
+      {{ company }}. Would love to connect and share insights.
+
+  # Follow-up messages sent after connection is accepted
+  # Each has a delay_days (from acceptance) and the message template
+  followup_templates:
+    - delay_days: 1
+      template: >
+        Thanks for connecting, {{ first_name }}! I work with
+        {{ job_title }}s like yourself who are looking to
+        streamline their teams' workflows. Curious - what's the
+        biggest operational challenge {{ company }} is facing
+        right now?
+    - delay_days: 4
+      template: >
+        {{ first_name }}, I wanted to share a quick case study
+        that might be relevant. We helped a {{ industry }}
+        company similar to {{ company }} reduce their workflow
+        overhead by 40%. Would a 15-min call be worth your time
+        to explore if we could do something similar?
+
+  followup_delay_days: 3     # Minimum days between follow-ups
+  max_followups: 2            # Max follow-up messages per prospect
+  personalize_with_profile: true  # Use profile data for personalization
