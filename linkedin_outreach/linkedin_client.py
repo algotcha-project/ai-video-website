@@ -1,6 +1,7 @@
 """
 LinkedIn API client wrapper with anti-detection measures.
 Wraps the unofficial linkedin-api library with safety features.
+Supports optional proxy routing per account.
 """
 
 import time
@@ -20,16 +21,34 @@ class LinkedInClient:
     to mimic human browsing patterns.
     """
 
-    def __init__(self, credentials: LinkedInCredentials, rate_limits: RateLimits):
+    def __init__(
+        self,
+        credentials: LinkedInCredentials,
+        rate_limits: RateLimits,
+        proxy: str = "",
+        account_name: str = "",
+    ):
         self._creds = credentials
         self._limits = rate_limits
+        self._proxy = proxy
+        self._account_name = account_name or credentials.email
         self._api: Optional[Linkedin] = None
         self._last_action_time = 0.0
 
     def connect(self) -> None:
-        logger.info("Authenticating with LinkedIn...")
-        self._api = Linkedin(self._creds.email, self._creds.password)
-        logger.info("Authenticated successfully.")
+        label = self._account_name
+        logger.info(f"[{label}] Authenticating with LinkedIn...")
+        proxies = {}
+        if self._proxy:
+            proxies = {"http": self._proxy, "https": self._proxy}
+            logger.info(f"[{label}] Using proxy: {self._proxy}")
+
+        self._api = Linkedin(
+            self._creds.email,
+            self._creds.password,
+            proxies=proxies or {},
+        )
+        logger.info(f"[{label}] Authenticated successfully.")
 
     @property
     def api(self) -> Linkedin:
@@ -47,7 +66,7 @@ class LinkedInClient:
         jitter = random.gauss(0, base * 0.15)
         wait = max(0, base + jitter - elapsed)
         if wait > 0:
-            logger.debug(f"Human delay: waiting {wait:.1f}s")
+            logger.debug(f"[{self._account_name}] Human delay: waiting {wait:.1f}s")
             time.sleep(wait)
         self._last_action_time = time.time()
 
@@ -62,7 +81,10 @@ class LinkedInClient:
         limit: int = 50,
     ) -> list[dict]:
         self._human_delay()
-        logger.info(f"Searching people: keywords={keywords}, title={keyword_title}, limit={limit}")
+        logger.info(
+            f"[{self._account_name}] Searching people: keywords={keywords}, "
+            f"title={keyword_title}, limit={limit}"
+        )
         results = self.api.search_people(
             keywords=keywords,
             connection_of=connection_of,
@@ -72,12 +94,12 @@ class LinkedInClient:
             keyword_title=keyword_title,
             limit=limit,
         )
-        logger.info(f"Found {len(results)} search results.")
+        logger.info(f"[{self._account_name}] Found {len(results)} search results.")
         return results
 
     def get_profile(self, public_id: str) -> dict:
         self._human_delay()
-        logger.debug(f"Fetching profile: {public_id}")
+        logger.debug(f"[{self._account_name}] Fetching profile: {public_id}")
         return self.api.get_profile(public_id)
 
     def get_profile_contact_info(self, public_id: str) -> dict:
@@ -87,12 +109,13 @@ class LinkedInClient:
     def send_connection_request(self, public_id: str, message: str) -> bool:
         if len(message) > 300:
             logger.warning(
-                f"Connection note too long ({len(message)} chars), truncating to 300."
+                f"[{self._account_name}] Connection note too long ({len(message)} chars), "
+                f"truncating to 300."
             )
             message = message[:297] + "..."
 
         self._human_delay()
-        logger.info(f"Sending connection request to {public_id}")
+        logger.info(f"[{self._account_name}] Sending connection request to {public_id}")
         try:
             profile = self.api.get_profile(public_id)
             urn_id = profile.get("profile_id") or profile.get("member_urn_id")
@@ -101,27 +124,32 @@ class LinkedInClient:
                 urn_id = urn_parts[0] if urn_parts else public_id
 
             self.api.add_connection(urn_id, message=message)
-            logger.info(f"Connection request sent to {public_id}")
+            logger.info(f"[{self._account_name}] Connection request sent to {public_id}")
             return True
         except Exception as e:
-            logger.error(f"Failed to send connection request to {public_id}: {e}")
+            logger.error(
+                f"[{self._account_name}] Failed to send connection request to {public_id}: {e}"
+            )
             return False
 
     def send_message(self, public_id: str, message: str) -> bool:
         self._human_delay()
-        logger.info(f"Sending message to {public_id}")
+        logger.info(f"[{self._account_name}] Sending message to {public_id}")
         try:
             conversation = self.api.get_conversation_details(public_id)
             if conversation:
-                self.api.send_message(message_body=message, conversation_urn_id=conversation.get("id"))
+                self.api.send_message(
+                    message_body=message,
+                    conversation_urn_id=conversation.get("id"),
+                )
             else:
                 profile = self.api.get_profile(public_id)
                 urn_id = profile.get("profile_id") or profile.get("member_urn_id", public_id)
                 self.api.send_message(message_body=message, recipients=[urn_id])
-            logger.info(f"Message sent to {public_id}")
+            logger.info(f"[{self._account_name}] Message sent to {public_id}")
             return True
         except Exception as e:
-            logger.error(f"Failed to send message to {public_id}: {e}")
+            logger.error(f"[{self._account_name}] Failed to send message to {public_id}: {e}")
             return False
 
     def check_connection_status(self, public_id: str) -> str:

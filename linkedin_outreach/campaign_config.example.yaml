@@ -146,3 +146,96 @@ messages:
   followup_delay_days: 3     # Minimum days between follow-ups
   max_followups: 2            # Max follow-up messages per prospect
   personalize_with_profile: true  # Use profile data for personalization
+
+# =============================================================================
+# MULTI-ACCOUNT MODE (optional)
+# =============================================================================
+# Define multiple LinkedIn accounts for parallel outreach.
+# Each account gets its own proxy, time window, and audience segment
+# so they don't overlap or trigger cross-account detection.
+#
+# To use: uncomment the section below and fill in your accounts.
+# Run with:  python -m linkedin_outreach multi-run
+# Stats:     python -m linkedin_outreach multi-stats
+# =============================================================================
+
+# accounts:
+#   - name: "account_1_fintech"
+#     email: "account1@example.com"
+#     password: "password1"
+#     proxy: "http://user:pass@proxy1.example.com:8080"    # unique residential proxy
+#     segment: "Fintech CTOs"
+#     job_titles:                      # override global search for this account
+#       - "CTO"
+#       - "VP Engineering"
+#     industries:
+#       - "Financial Services"
+#       - "Banking"
+#     locations:
+#       - "United States"
+#     start_hour: 8                    # stagger: this account works 8 AM - 12 PM
+#     end_hour: 12
+#
+#   - name: "account_2_saas"
+#     email: "account2@example.com"
+#     password: "password2"
+#     proxy: "http://user:pass@proxy2.example.com:8080"
+#     segment: "SaaS Directors"
+#     job_titles:
+#       - "Director of Engineering"
+#       - "Head of Product"
+#     industries:
+#       - "Software Development"
+#       - "Information Technology"
+#     locations:
+#       - "United States"
+#     start_hour: 10                   # stagger: works 10 AM - 2 PM
+#     end_hour: 14
+#
+#   - name: "account_3_healthcare"
+#     email: "account3@example.com"
+#     password: "password3"
+#     proxy: "http://user:pass@proxy3.example.com:8080"
+#     segment: "Healthcare Tech"
+#     job_titles:
+#       - "CTO"
+#       - "VP Technology"
+#     industries:
+#       - "Healthcare"
+#       - "Hospital & Health Care"
+#     locations:
+#       - "United States"
+#     start_hour: 12                   # stagger: works 12 PM - 4 PM
+#     end_hour: 16
+#
+#   - name: "account_4_uk"
+#     email: "account4@example.com"
+#     password: "password4"
+#     proxy: "http://user:pass@proxy4.example.com:8080"
+#     segment: "UK Tech Leaders"
+#     job_titles:
+#       - "CTO"
+#       - "Head of Engineering"
+#     industries:
+#       - "Software Development"
+#       - "Information Technology"
+#     locations:
+#       - "United Kingdom"
+#     start_hour: 14                   # stagger: works 2 PM - 6 PM
+#     end_hour: 18
+#
+#   - name: "account_5_ecommerce"
+#     email: "account5@example.com"
+#     password: "password5"
+#     proxy: "http://user:pass@proxy5.example.com:8080"
+#     segment: "E-commerce VPs"
+#     job_titles:
+#       - "VP Engineering"
+#       - "Director of Technology"
+#     industries:
+#       - "Retail"
+#       - "E-commerce"
+#     locations:
+#       - "United States"
+#     start_hour: 16                   # stagger: works 4 PM - 8 PM
+#     end_hour: 20

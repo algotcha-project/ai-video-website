@@ -38,5 +38,7 @@ next-env.d.ts
 linkedin_outreach/campaign_config.yaml
 linkedin_outreach/data/
 linkedin_outreach/logs/
+logs/
+data/
 __pycache__/
 *.pyc

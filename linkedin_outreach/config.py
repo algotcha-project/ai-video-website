@@ -1,6 +1,7 @@
 """
 Configuration management for LinkedIn outreach campaigns.
 Loads settings from YAML config and environment variables.
+Supports single-account and multi-account modes.
 """
 
 import os
@@ -20,6 +21,20 @@ class LinkedInCredentials:
 
 
 @dataclass
+class AccountConfig:
+    """Configuration for a single LinkedIn account in multi-account mode."""
+    name: str
+    credentials: LinkedInCredentials
+    proxy: str = ""
+    segment: str = ""
+    job_titles: list[str] = field(default_factory=list)
+    industries: list[str] = field(default_factory=list)
+    locations: list[str] = field(default_factory=list)
+    start_hour: int = 8
+    end_hour: int = 20
+
+
+@dataclass
 class SearchCriteria:
     keywords: list[str] = field(default_factory=list)
     job_titles: list[str] = field(default_factory=list)
@@ -27,7 +42,7 @@ class SearchCriteria:
     locations: list[str] = field(default_factory=list)
     company_sizes: list[str] = field(default_factory=list)
     exclude_keywords: list[str] = field(default_factory=list)
-    connection_degree: str = "2nd"  # "1st", "2nd", "3rd"
+    connection_degree: str = "2nd"
 
 
 @dataclass
@@ -67,6 +82,25 @@ class CampaignConfig:
     campaign_name: str = "default"
     data_dir: str = "data"
     log_dir: str = "logs"
+    accounts: list[AccountConfig] = field(default_factory=list)
+
+
+def _parse_account(raw: dict) -> AccountConfig:
+    creds = LinkedInCredentials(
+        email=raw.get("email", ""),
+        password=raw.get("password", ""),
+    )
+    return AccountConfig(
+        name=raw.get("name", creds.email.split("@")[0] if creds.email else "unnamed"),
+        credentials=creds,
+        proxy=raw.get("proxy", ""),
+        segment=raw.get("segment", ""),
+        job_titles=raw.get("job_titles", []),
+        industries=raw.get("industries", []),
+        locations=raw.get("locations", []),
+        start_hour=raw.get("start_hour", 8),
+        end_hour=raw.get("end_hour", 20),
+    )
 
 
 def load_config(path: Optional[str] = None) -> CampaignConfig:
@@ -84,10 +118,13 @@ def load_config(path: Optional[str] = None) -> CampaignConfig:
     li_password = os.environ.get("LINKEDIN_PASSWORD", raw.get("credentials", {}).get("password", ""))
 
     if not li_email or not li_password:
-        raise ValueError(
-            "LinkedIn credentials required. Set LINKEDIN_EMAIL and LINKEDIN_PASSWORD "
-            "environment variables, or fill them in campaign_config.yaml."
-        )
+        if not raw.get("accounts"):
+            raise ValueError(
+                "LinkedIn credentials required. Set LINKEDIN_EMAIL and LINKEDIN_PASSWORD "
+                "environment variables, fill them in campaign_config.yaml, or define accounts."
+            )
+        li_email = li_email or "multi-account-mode"
+        li_password = li_password or "multi-account-mode"
 
     credentials = LinkedInCredentials(email=li_email, password=li_password)
 
@@ -128,6 +165,10 @@ def load_config(path: Optional[str] = None) -> CampaignConfig:
         service=msg_raw.get("service", ""),
     )
 
+    accounts = []
+    for acct_raw in raw.get("accounts", []):
+        accounts.append(_parse_account(acct_raw))
+
     return CampaignConfig(
         credentials=credentials,
         search=search,
@@ -136,4 +177,5 @@ def load_config(path: Optional[str] = None) -> CampaignConfig:
         campaign_name=raw.get("campaign_name", "default"),
         data_dir=raw.get("data_dir", "data"),
         log_dir=raw.get("log_dir", "logs"),
+        accounts=accounts,
     )

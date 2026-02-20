@@ -154,21 +154,71 @@ The system uses multiple layers to avoid LinkedIn spam detection:
 
 ---
 
+## Multi-Account Mode (3-5 Accounts)
+
+For faster results, you can run up to 5 accounts in parallel. The system handles:
+- **Audience segmentation** -- each account targets a different niche so they never contact the same person
+- **Staggered time windows** -- accounts operate in different hours to avoid pattern detection
+- **Per-account proxies** -- each account routes through a different residential IP
+- **Shared de-duplication** -- a single prospect database ensures no overlap
+- **Sequential execution** -- accounts run one at a time with random gaps between them
+
+### What You Need for Multi-Account
+
+| Per Account | Description |
+|---|---|
+| LinkedIn credentials | Email + password for each account |
+| Residential proxy | A unique proxy IP (e.g., from Bright Data, Smartproxy, IPRoyal) |
+| Audience segment | Different job titles, industries, or locations per account |
+| Time window | Stagger hours so accounts aren't active simultaneously |
+
+### Multi-Account Setup
+
+1. Uncomment the `accounts` section in `campaign_config.yaml` (see the example config)
+2. Fill in credentials, proxy, segment, and time window for each account
+3. Run with multi-account commands:
+
+```bash
+# Run one cycle across all accounts
+python -m linkedin_outreach multi-run
+
+# Run continuously
+python -m linkedin_outreach multi-run --cycles 0
+
+# View per-account statistics
+python -m linkedin_outreach multi-stats
+```
+
+### Recommended 5-Account Layout
+
+| Account | Segment | Hours | Why |
+|---|---|---|---|
+| 1 | Fintech CTOs | 8 AM - 12 PM | Financial services decision-makers |
+| 2 | SaaS Directors | 10 AM - 2 PM | Software company mid-level leaders |
+| 3 | Healthcare Tech | 12 PM - 4 PM | Healthcare IT decision-makers |
+| 4 | UK Tech Leaders | 2 PM - 6 PM | Different geography = zero overlap |
+| 5 | E-commerce VPs | 4 PM - 8 PM | Retail/e-commerce vertical |
+
+This gives you ~100 connection requests/day across 5 distinct audiences with zero overlap.
+
+---
+
 ## Project Structure
 
 ```
 linkedin_outreach/
 ├── __init__.py
 ├── __main__.py              # Entry point
-├── cli.py                   # CLI commands (run, search, stats, preview, export)
-├── config.py                # Configuration management
-├── campaign.py              # Main campaign orchestrator
-├── linkedin_client.py       # LinkedIn API wrapper with anti-detection
+├── cli.py                   # CLI commands (run, multi-run, stats, multi-stats, etc.)
+├── config.py                # Configuration (single + multi-account)
+├── campaign.py              # Single-account campaign orchestrator
+├── multi_account.py         # Multi-account manager with segmentation
+├── linkedin_client.py       # LinkedIn API wrapper with proxy support
 ├── prospect_finder.py       # Search and filter prospects
-├── prospect_store.py        # Prospect database (JSON file)
+├── prospect_store.py        # Shared prospect database (JSON file)
 ├── message_engine.py        # Template rendering and variation
-├── rate_limiter.py          # Rate limiting and warmup
-├── campaign_config.example.yaml  # Example config (copy and edit)
+├── rate_limiter.py          # Per-account rate limiting and warmup
+├── campaign_config.example.yaml  # Example config with multi-account section
 ├── requirements.txt
 ├── data/                    # Prospect data (auto-created)
 └── logs/                    # Campaign logs (auto-created)
