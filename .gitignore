@@ -33,3 +33,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# LinkedIn outreach
+linkedin_outreach/campaign_config.yaml
+linkedin_outreach/data/
+linkedin_outreach/logs/
+logs/
+data/
+__pycache__/
+*.pyc
